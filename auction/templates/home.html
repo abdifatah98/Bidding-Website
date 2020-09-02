@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+</head>
+<body>
+        <!-- templates/home.html -->
+    {% extends 'base.html' %}
+
+    {% block title %}Home{% endblock %}
+    {% block content %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1>
+            Home Page
+          </h1>
+          <p>This is the Home Page not the default Page</p>
+      </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

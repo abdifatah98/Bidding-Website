@@ -1,0 +1,76 @@
+<!-- templates/auction/AuctionList.html -->
+{% extends 'base.html' %}
+
+{% block title %}AuctionList{% endblock %}
+
+{% block content %}
+<h1>Auction List</h1>
+
+<h3>Search Box</h3>
+{% csrf_token %}
+<input type="text" id="search_text" name="search_text" >
+<button id="searchButton" name="button">Search</button>
+
+<p id="listLocation">This is the list</p>
+
+<ul id = "search-results">
+
+</ul>
+{% endblock %}
+
+{% block ajaxStuff %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script>
+    $(function(){
+      var csrf_token = $('input[name=csrfmiddlewaretoken]').val();
+
+      $('#searchButton').click(function(){
+        $.ajax({
+          headers: { "X-CSRFToken": csrf_token},
+          type:"POST",
+          url:"{% url 'search Bar' %}",
+          data: $('#search_text').serializeArray(),
+          success:function(data){
+            $("#search-results").empty()
+            var data = JSON.parse(data)
+            for(var i = 0 ; i < data.auctions.length; i++)
+            {
+               temp  = "<div>"
+               temp += "" + data.auctions[i].Name + " " + data.auctions[i].Description+ " " + data.auctions[i].AuctionEnd
+                 if (data.auctions[i].Image != "") {
+                    temp += "<img src=/media/" + data.auctions[i].Image + "  class=\"img-thumbnail w-25 p-3\">"
+                 }
+               temp += "<button onclick=\"location.href='/Auction/"+ data.auctions[i].ID+"'\">Bid</button></div>"
+             $("#search-results").append(temp)
+            }
+            if(data.auctions.length <= 0){
+              $("#search-results").append("No results")
+            }
+          },
+          dataType:'text'
+        });
+      });
+    });
+
+    $.ajax({
+      url : "{% url 'list of auctions' %}",
+      method:"GET",
+      data:"json",
+      success:function(data){
+        for(var i = 0 ; i < data.auctions.length; i++)
+        {
+           temp  = "<div>"
+           temp += "" + data.auctions[i].Name + " " + data.auctions[i].Description+ " " + data.auctions[i].AuctionEnd
+             if (data.auctions[i].Image != "") {
+                temp += "<img src=/media/" + data.auctions[i].Image + "  class=\"img-thumbnail w-25 p-3\"></div>"
+             }
+           temp += "<button onclick=\"location.href='/Auction/"+ data.auctions[i].ID+"'\">Bid</button></div>"
+         $("#listLocation").append(temp)
+        }
+      },
+      error:function(){
+        $("#listLocation").append("No Data Found")
+      }
+    })
+  </script>
+{% endblock%}
